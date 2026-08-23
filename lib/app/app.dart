@@ -8,6 +8,10 @@ import '../features/auth/presentation/cubit/auth_cubit.dart';
 import '../features/auth/presentation/cubit/auth_state.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
+import '../features/projects/data/repositories/project_repository.dart';
+import '../features/projects/presentation/cubit/project_cubit.dart';
+import '../features/projects/presentation/screens/project_list_screen.dart';
+import '../features/tasks/data/repositories/task_repository.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_cubit.dart';
 
@@ -18,8 +22,18 @@ class TaskFlowApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<AuthRepository>(
-      create: (context) => AuthRepositoryImpl(),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AuthRepository>(
+          create: (context) => AuthRepositoryImpl(),
+        ),
+        RepositoryProvider<ProjectRepository>(
+          create: (context) => ProjectRepositoryImpl(),
+        ),
+        RepositoryProvider<TaskRepository>(
+          create: (context) => TaskRepositoryImpl(),
+        ),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<ThemeCubit>(
@@ -27,6 +41,9 @@ class TaskFlowApp extends StatelessWidget {
           ),
           BlocProvider<AuthCubit>(
             create: (context) => AuthCubit(context.read<AuthRepository>()),
+          ),
+          BlocProvider<ProjectCubit>(
+            create: (context) => ProjectCubit(context.read<ProjectRepository>()),
           ),
         ],
         child: BlocBuilder<ThemeCubit, ThemeMode>(
@@ -48,7 +65,7 @@ class TaskFlowApp extends StatelessWidget {
                   home: BlocBuilder<AuthCubit, AuthState>(
                     builder: (context, authState) {
                       if (authState is AuthAuthenticated) {
-                        return InitialPlaceholder(user: authState.user);
+                        return const ProjectListScreen();
                       } else if (authState is AuthUnauthenticated) {
                         return const LoginScreen();
                       } else {
@@ -60,75 +77,6 @@ class TaskFlowApp extends StatelessWidget {
               },
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class InitialPlaceholder extends StatelessWidget {
-  final dynamic user;
-  const InitialPlaceholder({super.key, required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TaskFlow Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.brightness_medium),
-            onPressed: () {
-              context.read<ThemeCubit>().toggleTheme();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthCubit>().logout();
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 40.r,
-              backgroundImage: NetworkImage(user.avatarUrl),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Hello, ${user.name}!',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'Email: ${user.email}',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              'Role: ${user.role} | Org: ${user.orgId}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            SizedBox(height: 24.h),
-            ElevatedButton(
-              onPressed: () {
-                // Test token expiry refresh mechanism
-                context.read<AuthCubit>().simulateTokenExpiry();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Simulated token expiry triggered! Checking console / console refresh.'),
-                  ),
-                );
-              },
-              child: const Text('Simulate Token Expiry (Refresh)'),
-            ),
-          ],
         ),
       ),
     );
