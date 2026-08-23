@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/enums/app_enums.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../data/models/task_model.dart';
 import '../../data/repositories/task_repository.dart';
@@ -153,7 +154,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             child: BlocBuilder<TaskCubit, TaskState>(
               builder: (context, state) {
                 if (state is TaskLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const TaskListSkeleton();
                 }
                 if (state is TaskError) {
                   return Center(

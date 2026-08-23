@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../../tasks/data/models/task_model.dart';
@@ -83,7 +84,7 @@ class _NotificationInboxScreenState extends State<NotificationInboxScreen> {
       body: BlocBuilder<NotificationCubit, NotificationState>(
         builder: (context, state) {
           if (state is NotificationLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const NotificationListSkeleton();
           }
           if (state is NotificationError) {
             return Center(

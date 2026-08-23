@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../cubit/auth_cubit.dart';
@@ -287,8 +288,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                     ] else if (_isLoadingCredentials) ...[
-                      const Center(
-                        child: CircularProgressIndicator(),
+                      ShimmerLoading(
+                        child: Column(
+                          children: List.generate(
+                            3,
+                            (index) => Padding(
+                              padding: EdgeInsets.only(bottom: 6.h),
+                              child: SkeletonBox(
+                                width: double.infinity,
+                                height: 48.h,
+                                borderRadius: 12,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ],

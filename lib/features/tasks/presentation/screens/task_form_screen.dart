@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/enums/app_enums.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../data/models/task_model.dart';
@@ -138,7 +139,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       ),
       body: SafeArea(
         child: _isLoadingMembers
-            ? const Center(child: CircularProgressIndicator())
+            ? const FormSkeleton()
             : SingleChildScrollView(
                 padding: EdgeInsets.all(24.r),
                 child: Form(

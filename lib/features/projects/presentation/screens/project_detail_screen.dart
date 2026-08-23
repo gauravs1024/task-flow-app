@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/enums/app_enums.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
@@ -187,11 +188,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
 
   Widget _buildTasksList(TaskState state) {
     if (state is TaskLoading) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 40),
-          child: CircularProgressIndicator(),
-        ),
+      return const SizedBox(
+        height: 240,
+        child: TaskListSkeleton(count: 3),
       );
     }
     if (state is TaskEmpty) {
