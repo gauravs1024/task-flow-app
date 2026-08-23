@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/theme_cubit.dart';
 import '../../../../core/data/mock_data_source.dart';
+import '../../../../core/enums/app_enums.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
 import '../cubit/project_cubit.dart';
@@ -74,15 +75,104 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                // Theme Toggle
-                ListTile(
-                  leading: const Icon(Icons.brightness_6_outlined),
-                  title: const Text('Dark Mode'),
-                  trailing: Switch(
-                    value: themeMode == ThemeMode.dark,
-                    onChanged: (_) {
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
+                // ── Theme Selector ──────────────────────────────
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.palette_outlined,
+                            size: 20.sp,
+                            color: AppColors.primary,
+                          ),
+                          SizedBox(width: 12.w),
+                          Text(
+                            'App Theme',
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 14.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest
+                              .withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
+                        ),
+                        child: DropdownButton<AppThemeMode>(
+                          value: _flutterModeToAppMode(themeMode),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          icon: Icon(
+                            Icons.expand_more_rounded,
+                            color: AppColors.primary,
+                            size: 22.sp,
+                          ),
+                          onChanged: (mode) {
+                            if (mode != null) {
+                              context.read<ThemeCubit>().setTheme(mode);
+                            }
+                          },
+                          items: AppThemeMode.values
+                              .map(
+                                (mode) => DropdownMenuItem(
+                                  value: mode,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        _themeIcon(mode),
+                                        size: 18.sp,
+                                        color: _flutterModeToAppMode(
+                                                    themeMode) ==
+                                                mode
+                                            ? AppColors.primary
+                                            : Theme.of(context)
+                                                .iconTheme
+                                                .color,
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Text(
+                                        _themeLabel(mode),
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: _flutterModeToAppMode(
+                                                      themeMode) ==
+                                                  mode
+                                              ? FontWeight.w600
+                                              : FontWeight.normal,
+                                          color: _flutterModeToAppMode(
+                                                      themeMode) ==
+                                                  mode
+                                              ? AppColors.primary
+                                              : null,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const Divider(),
@@ -258,5 +348,39 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
         ],
       ),
     );
+  }
+
+  // ── Theme helpers ──────────────────────────────────────────
+  AppThemeMode _flutterModeToAppMode(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return AppThemeMode.light;
+      case ThemeMode.dark:
+        return AppThemeMode.dark;
+      case ThemeMode.system:
+        return AppThemeMode.system;
+    }
+  }
+
+  IconData _themeIcon(AppThemeMode mode) {
+    switch (mode) {
+      case AppThemeMode.light:
+        return Icons.light_mode_outlined;
+      case AppThemeMode.dark:
+        return Icons.dark_mode_outlined;
+      case AppThemeMode.system:
+        return Icons.brightness_auto_outlined;
+    }
+  }
+
+  String _themeLabel(AppThemeMode mode) {
+    switch (mode) {
+      case AppThemeMode.light:
+        return 'Light';
+      case AppThemeMode.dark:
+        return 'Dark';
+      case AppThemeMode.system:
+        return 'System Default';
+    }
   }
 }
