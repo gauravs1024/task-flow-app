@@ -14,10 +14,12 @@ class TaskLoading extends TaskState {}
 
 class TaskSuccess extends TaskState {
   final List<TaskModel> tasks;
-  const TaskSuccess(this.tasks);
+  final bool isStale;
+  
+  const TaskSuccess(this.tasks, {this.isStale = false});
 
   @override
-  List<Object?> get props => [tasks];
+  List<Object?> get props => [tasks, isStale];
 }
 
 class TaskEmpty extends TaskState {}

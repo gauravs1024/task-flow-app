@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "sourceId": "reports",
+  "buildTime": 1787459634127,
+  "files": [
+    {
+      "relativePath": "reports/20260823/20260823_100013_task_flow_app.log",
+      "uri": "file:///Users/gaurav/Documents/personal/task_flow_app/reports/20260823/20260823_100013_task_flow_app.log",
+      "sizeBytes": 127173,
+      "mtime": 1787459416648,
+      "correlationTokens": [],
+      "fingerprints": []
+    },
+    {
+      "relativePath": "reports/20260823/20260823_100347_task_flow_app.log",
+      "uri": "file:///Users/gaurav/Documents/personal/task_flow_app/reports/20260823/20260823_100347_task_flow_app.log",
+      "sizeBytes": 130083,
+      "mtime": 1787459633919,
+      "correlationTokens": [],
+      "fingerprints": [
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> D ActivityManager: Too many transaction errors, throttling transaction error callback.",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: pid <N> system sent binder code <N> with flags 1 and got error -<N>",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> E lowmemorykiller: process_mrelease <N> failed: No such process",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@fd07b28",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@2649b27",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@1232f7d",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@4bf117d",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@d549a1f",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@be94bbc",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@6c74ba8",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@7d896c1",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@e197a54",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@d71541d",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@6f889d0",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@9ad2d23",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@4a3304c",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@af91d9b",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@3f90538",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@cbedf62",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@bd31fe6",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@22280b3",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@6f03c15",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@f8cd8cd",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@494f582",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@ab168f5",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@afc9f71",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@ae3ec06",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@dc2c292",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@a89e566",
+        "[logcat] <N>-<N> <N>:<N>:<N>.<N> <N> <N> W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@37ff0a7"
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/data/mock_data_source.dart';
 import '../../data/repositories/task_repository.dart';
 import '../../data/models/task_model.dart';
 import 'task_state.dart';
@@ -17,7 +18,7 @@ class TaskCubit extends Cubit<TaskState> {
       if (tasks.isEmpty) {
         emit(TaskEmpty());
       } else {
-        emit(TaskSuccess(tasks));
+        emit(TaskSuccess(tasks, isStale: MockDataSource().isOffline));
       }
     } catch (e) {
       emit(TaskError(e.toString()));

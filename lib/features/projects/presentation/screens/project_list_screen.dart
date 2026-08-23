@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
-import '../../../../app/theme/theme_cubit.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
@@ -11,6 +10,9 @@ import '../../data/models/project_model.dart';
 import '../cubit/project_cubit.dart';
 import '../cubit/project_state.dart';
 import 'project_detail_screen.dart';
+import 'settings_debug_drawer.dart';
+import '../../../notifications/presentation/cubit/notification_cubit.dart';
+import '../../../notifications/presentation/screens/notification_inbox_screen.dart';
 
 class ProjectListScreen extends StatefulWidget {
   const ProjectListScreen({super.key});
@@ -29,7 +31,9 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
     final authState = context.read<AuthCubit>().state as AuthAuthenticated;
     _orgId = authState.user.orgId ?? '';
     _userRole = authState.user.role ?? '';
+    final userId = authState.user.id;
     context.read<ProjectCubit>().loadProjects(_orgId);
+    context.read<NotificationCubit>().loadNotifications(userId);
   }
 
   void _showProjectForm({ProjectModel? project}) {
@@ -164,19 +168,34 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
     final isAdmin = _userRole == 'org_admin';
 
     return Scaffold(
+      drawer: SettingsDebugDrawer(orgId: _orgId),
       appBar: AppBar(
         title: Text(LocaleKeys.home_name.tr()),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.brightness_medium),
-            onPressed: () {
-              context.read<ThemeCubit>().toggleTheme();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthCubit>().logout();
+          BlocBuilder<NotificationCubit, NotificationState>(
+            builder: (context, state) {
+              int unreadCount = 0;
+              if (state is NotificationSuccess) {
+                unreadCount = state.notifications.where((n) => !n.read).length;
+              }
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: unreadCount > 0,
+                  label: Text('$unreadCount'),
+                  child: const Icon(Icons.notifications_outlined),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (innerContext) => BlocProvider.value(
+                        value: context.read<NotificationCubit>(),
+                        child: const NotificationInboxScreen(),
+                      ),
+                    ),
+                  );
+                },
+              );
             },
           ),
         ],
@@ -221,121 +240,148 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
           if (state is ProjectSuccess) {
             final projects = state.projects;
 
-            return RefreshIndicator(
-              onRefresh: () => context.read<ProjectCubit>().loadProjects(_orgId),
-              child: ListView.builder(
-                padding: EdgeInsets.all(16.r),
-                itemCount: projects.length,
-                itemBuilder: (context, index) {
-                  final project = projects[index];
-                  return Card(
-                    margin: EdgeInsets.only(bottom: 12.h),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProjectDetailScreen(project: project),
+            return Column(
+              children: [
+                if (state.isStale)
+                  Container(
+                    width: double.infinity,
+                    color: AppColors.warning.withValues(alpha: 0.15),
+                    padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.cloud_off, color: AppColors.warning, size: 16),
+                        SizedBox(width: 8.w),
+                        Text(
+                          LocaleKeys.offline_stale_data.tr(),
+                          style: TextStyle(
+                            color: AppColors.warning,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.sp,
                           ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(16.r),
-                      child: Padding(
-                        padding: EdgeInsets.all(16.r),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    project.name,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => context.read<ProjectCubit>().loadProjects(_orgId),
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(16.r),
+                      itemCount: projects.length,
+                      itemBuilder: (context, index) {
+                        final project = projects[index];
+                        return Card(
+                          margin: EdgeInsets.only(bottom: 12.h),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProjectDetailScreen(project: project),
                                 ),
-                                if (isAdmin) ...[
-                                  PopupMenuButton<String>(
-                                    onSelected: (value) {
-                                      if (value == 'edit') {
-                                        _showProjectForm(project: project);
-                                      } else if (value == 'delete') {
-                                        _confirmDelete(project);
-                                      }
-                                    },
-                                    itemBuilder: (context) => [
-                                      const PopupMenuItem(
-                                        value: 'edit',
-                                        child: Text('Edit Project'),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(16.r),
+                            child: Padding(
+                              padding: EdgeInsets.all(16.r),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          project.name,
+                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                fontSize: 18.sp,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
                                       ),
-                                      const PopupMenuItem(
-                                        value: 'delete',
-                                        child: Text('Delete Project', style: TextStyle(color: AppColors.error)),
+                                      if (isAdmin) ...[
+                                        PopupMenuButton<String>(
+                                          onSelected: (value) {
+                                            if (value == 'edit') {
+                                              _showProjectForm(project: project);
+                                            } else if (value == 'delete') {
+                                              _confirmDelete(project);
+                                            }
+                                          },
+                                          itemBuilder: (context) => [
+                                            const PopupMenuItem(
+                                              value: 'edit',
+                                              child: Text('Edit Project'),
+                                            ),
+                                            const PopupMenuItem(
+                                              value: 'delete',
+                                              child: Text('Delete Project', style: TextStyle(color: AppColors.error)),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  Text(
+                                    project.description,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  SizedBox(height: 16.h),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.list_alt,
+                                            size: 16,
+                                            color: AppColors.primary,
+                                          ),
+                                          SizedBox(width: 6.w),
+                                          Text(
+                                            '${project.taskCount} Tasks',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.primary,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                        decoration: BoxDecoration(
+                                          color: project.status == 'active'
+                                              ? AppColors.success.withValues(alpha: 0.1)
+                                              : AppColors.textSecondaryLight.withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(12.r),
+                                        ),
+                                        child: Text(
+                                          project.status.toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 10.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: project.status == 'active'
+                                                ? AppColors.success
+                                                : AppColors.textSecondaryLight,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ],
-                              ],
+                              ),
                             ),
-                            SizedBox(height: 8.h),
-                            Text(
-                              project.description,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            SizedBox(height: 16.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.list_alt,
-                                      size: 16,
-                                      color: AppColors.primary,
-                                    ),
-                                    SizedBox(width: 6.w),
-                                    Text(
-                                      '${project.taskCount} Tasks',
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.primary,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                                  decoration: BoxDecoration(
-                                    color: project.status == 'active'
-                                        ? AppColors.success.withValues(alpha: 0.1)
-                                        : AppColors.textSecondaryLight.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12.r),
-                                  ),
-                                  child: Text(
-                                    project.status.toUpperCase(),
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: project.status == 'active'
-                                          ? AppColors.success
-                                          : AppColors.textSecondaryLight,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             );
           }
 

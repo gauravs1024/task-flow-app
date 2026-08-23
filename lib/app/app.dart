@@ -8,6 +8,8 @@ import '../features/auth/presentation/cubit/auth_cubit.dart';
 import '../features/auth/presentation/cubit/auth_state.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
+import '../features/notifications/data/repositories/notification_repository.dart';
+import '../features/notifications/presentation/cubit/notification_cubit.dart';
 import '../features/projects/data/repositories/project_repository.dart';
 import '../features/projects/presentation/cubit/project_cubit.dart';
 import '../features/projects/presentation/screens/project_list_screen.dart';
@@ -28,10 +30,13 @@ class TaskFlowApp extends StatelessWidget {
           create: (context) => AuthRepositoryImpl(),
         ),
         RepositoryProvider<ProjectRepository>(
-          create: (context) => ProjectRepositoryImpl(),
+          create: (context) => ProjectRepositoryImpl(prefs),
         ),
         RepositoryProvider<TaskRepository>(
-          create: (context) => TaskRepositoryImpl(),
+          create: (context) => TaskRepositoryImpl(prefs),
+        ),
+        RepositoryProvider<NotificationRepository>(
+          create: (context) => NotificationRepositoryImpl(),
         ),
       ],
       child: MultiBlocProvider(
@@ -44,6 +49,9 @@ class TaskFlowApp extends StatelessWidget {
           ),
           BlocProvider<ProjectCubit>(
             create: (context) => ProjectCubit(context.read<ProjectRepository>()),
+          ),
+          BlocProvider<NotificationCubit>(
+            create: (context) => NotificationCubit(context.read<NotificationRepository>()),
           ),
         ],
         child: BlocBuilder<ThemeCubit, ThemeMode>(

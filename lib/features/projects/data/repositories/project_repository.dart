@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/data/mock_data_source.dart';
 import '../models/project_model.dart';
 
@@ -23,19 +25,36 @@ abstract class ProjectRepository {
 
 class ProjectRepositoryImpl implements ProjectRepository {
   final MockDataSource _dataSource = MockDataSource();
+  final SharedPreferences _prefs;
+
+  ProjectRepositoryImpl(this._prefs);
 
   @override
   Future<List<ProjectModel>> getProjects(String orgId) async {
-    // 1. Simulate network latency/errors
-    await _dataSource.simulateNetwork();
+    try {
+      // 1. Simulate network latency/errors
+      await _dataSource.simulateNetwork();
 
-    // 2. Fetch projects scoped to this organization ID
-    final orgProjects = _dataSource.projects
-        .where((proj) => proj['org_id'] == orgId)
-        .map((proj) => ProjectModel.fromJson(proj))
-        .toList();
+      // 2. Fetch projects scoped to this organization ID
+      final orgProjects = _dataSource.projects
+          .where((proj) => proj['org_id'] == orgId)
+          .map((proj) => ProjectModel.fromJson(proj))
+          .toList();
 
-    return orgProjects;
+      // 3. Cache projects locally in SharedPreferences
+      final jsonStr = json.encode(orgProjects.map((p) => p.toJson()).toList());
+      await _prefs.setString('projects_cache_$orgId', jsonStr);
+
+      return orgProjects;
+    } on OfflineException {
+      // Offline fallback: load from local cache
+      final cachedStr = _prefs.getString('projects_cache_$orgId');
+      if (cachedStr != null) {
+        final decoded = json.decode(cachedStr) as List;
+        return decoded.map((p) => ProjectModel.fromJson(p as Map<String, dynamic>)).toList();
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -112,7 +131,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }) async {
     await _dataSource.simulateNetwork();
 
-    // Enforce role-based block inside data/repo layer (Task 03 - Authorization)
+    // Enforce role-based block inside data/repo layer
     if (userRole != 'org_admin') {
       throw ValidationException('Unauthorized: Only organization admins can delete projects');
     }

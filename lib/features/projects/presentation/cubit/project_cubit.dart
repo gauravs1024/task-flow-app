@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/data/mock_data_source.dart';
 import '../../data/repositories/project_repository.dart';
 import '../../data/models/project_model.dart';
 import 'project_state.dart';
@@ -17,7 +18,7 @@ class ProjectCubit extends Cubit<ProjectState> {
       if (projects.isEmpty) {
         emit(ProjectEmpty());
       } else {
-        emit(ProjectSuccess(projects));
+        emit(ProjectSuccess(projects, isStale: MockDataSource().isOffline));
       }
     } catch (e) {
       emit(ProjectError(e.toString()));

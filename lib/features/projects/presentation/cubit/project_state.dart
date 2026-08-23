@@ -14,10 +14,12 @@ class ProjectLoading extends ProjectState {}
 
 class ProjectSuccess extends ProjectState {
   final List<ProjectModel> projects;
-  const ProjectSuccess(this.projects);
+  final bool isStale;
+  
+  const ProjectSuccess(this.projects, {this.isStale = false});
 
   @override
-  List<Object?> get props => [projects];
+  List<Object?> get props => [projects, isStale];
 }
 
 class ProjectEmpty extends ProjectState {}
