@@ -55,6 +55,8 @@ class TaskModel extends Equatable {
     };
   }
 
+  static const Object _sentinel = Object();
+
   TaskModel copyWith({
     String? id,
     String? projectId,
@@ -62,7 +64,7 @@ class TaskModel extends Equatable {
     String? description,
     TaskStatus? status,
     TaskPriority? priority,
-    String? assigneeId,
+    Object? assigneeId = _sentinel,
     DateTime? dueDate,
     DateTime? createdAt,
   }) {
@@ -73,7 +75,9 @@ class TaskModel extends Equatable {
       description: description ?? this.description,
       status: status ?? this.status,
       priority: priority ?? this.priority,
-      assigneeId: assigneeId, // can be null explicitly to unassign
+      assigneeId: identical(assigneeId, _sentinel)
+          ? this.assigneeId
+          : assigneeId as String?,
       dueDate: dueDate ?? this.dueDate,
       createdAt: createdAt ?? this.createdAt,
     );

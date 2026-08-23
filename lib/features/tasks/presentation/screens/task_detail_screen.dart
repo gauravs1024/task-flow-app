@@ -103,18 +103,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   Future<void> _updateAssignee(String? newAssigneeId) async {
-    // To support explicitly unassigning (null), we build task directly.
-    final updatedTask = TaskModel(
-      id: _task.id,
-      projectId: _task.projectId,
-      title: _task.title,
-      description: _task.description,
-      status: _task.status,
-      priority: _task.priority,
-      assigneeId: newAssigneeId,
-      dueDate: _task.dueDate,
-      createdAt: _task.createdAt,
-    );
+    final updatedTask = _task.copyWith(assigneeId: newAssigneeId);
     final success = await context.read<TaskCubit>().updateTask(
       updatedTask,
       _userOrgId,

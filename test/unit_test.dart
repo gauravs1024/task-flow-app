@@ -87,15 +87,32 @@ void main() {
         description: 'Check detail specifications',
         status: TaskStatus.todo,
         priority: TaskPriority.high,
+        assigneeId: 'user_001',
         dueDate: DateTime(2026, 1, 1),
         createdAt: DateTime(2025, 12, 1),
       );
 
-      final copy = task.copyWith(status: TaskStatus.done);
-      expect(copy.status, TaskStatus.done);
-      expect(copy.id, task.id);
-      expect(copy.projectId, task.projectId);
-      expect(copy.priority, TaskPriority.high);
+      // Status change should preserve assigneeId
+      final statusCopy = task.copyWith(status: TaskStatus.done);
+      expect(statusCopy.status, TaskStatus.done);
+      expect(statusCopy.id, task.id);
+      expect(statusCopy.projectId, task.projectId);
+      expect(statusCopy.priority, TaskPriority.high);
+      expect(statusCopy.assigneeId, 'user_001');
+
+      // Priority change should preserve assigneeId
+      final priorityCopy = task.copyWith(priority: TaskPriority.urgent);
+      expect(priorityCopy.priority, TaskPriority.urgent);
+      expect(priorityCopy.status, TaskStatus.todo);
+      expect(priorityCopy.assigneeId, 'user_001');
+
+      // Assignee change should update assigneeId
+      final reassignCopy = task.copyWith(assigneeId: 'user_002');
+      expect(reassignCopy.assigneeId, 'user_002');
+
+      // Explicit unassign should set assigneeId to null
+      final unassignCopy = task.copyWith(assigneeId: null);
+      expect(unassignCopy.assigneeId, isNull);
     });
 
     test('TaskModel JSON round-trip', () {
