@@ -1,0 +1,29 @@
+name: task_flow_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  easy_localization: ^3.0.8
+  equatable: ^2.1.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_screenutil: ^5.9.3
+  flutter_secure_storage: ^11.0.0
+  shared_preferences: ^2.5.5
+  uuid: ^4.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - mock-data.json
+    - assets/translations/
