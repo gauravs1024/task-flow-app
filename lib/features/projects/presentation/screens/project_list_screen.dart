@@ -131,12 +131,12 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Delete Project'),
-          content: Text('Are you sure you want to delete "${project.name}"? This will delete all associated tasks and comments.'),
+          title: Text(LocaleKeys.task_confirm_delete_title.tr()),
+          content: Text('${LocaleKeys.project_confirm_delete_project_msg.tr()} (${project.name})'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text(LocaleKeys.task_cancel_btn.tr()),
             ),
             TextButton(
               onPressed: () async {
@@ -155,7 +155,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                   );
                 }
               },
-              child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+              child: Text(LocaleKeys.task_delete_btn.tr(), style: const TextStyle(color: AppColors.error)),
             ),
           ],
         );

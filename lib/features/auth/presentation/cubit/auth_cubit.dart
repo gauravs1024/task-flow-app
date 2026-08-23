@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/logger.dart';
 import '../../data/repositories/auth_repository.dart';
 import 'auth_state.dart';
 
@@ -13,6 +14,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> checkAuthStatus() async {
+    AppLogger.info('AuthCubit.checkAuthStatus checking local session...');
     emit(AuthLoading());
     try {
       final user = await _authRepository.checkSession();
@@ -28,6 +30,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> login(String email, String password) async {
+    AppLogger.info('AuthCubit.login processing login for $email');
     emit(AuthLoading());
     try {
       final user = await _authRepository.login(email, password);
@@ -39,6 +42,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> register(String name, String email, String password) async {
+    AppLogger.info('AuthCubit.register processing registration for $email');
     emit(AuthLoading());
     try {
       await _authRepository.register(name, email, password);
@@ -51,6 +55,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> logout() async {
+    AppLogger.info('AuthCubit.logout logging out user');
     emit(AuthLoading());
     try {
       await _authRepository.logout();
@@ -75,6 +80,7 @@ class AuthCubit extends Cubit<AuthState> {
             } else {
               // Access token expired but refresh token valid: run silent refresh
               try {
+                AppLogger.info('AuthCubit daemon: access token expired. Refreshing token silently...');
                 await _authRepository.refreshToken(tokens.refreshToken);
                 // Keep the current authenticated state active with the refreshed tokens
                 final user = await _authRepository.getStoredUser();
@@ -93,6 +99,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Exposed debug helper: forces token expiry immediately for demonstration
   Future<void> simulateTokenExpiry() async {
+    AppLogger.warning('AuthCubit: Simulating token expiry immediately...');
     if (state is AuthAuthenticated) {
       await _authRepository.forceTokenExpiry();
       // Instantly run the periodic check logic rather than waiting for next tick

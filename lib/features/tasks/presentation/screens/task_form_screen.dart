@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/enums/app_enums.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../data/models/task_model.dart';
@@ -23,8 +24,8 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
 
-  String _status = 'todo';
-  String _priority = 'medium';
+  TaskStatus _status = TaskStatus.todo;
+  TaskPriority _priority = TaskPriority.medium;
   DateTime _dueDate = DateTime.now().add(const Duration(days: 7));
   String? _assigneeId;
 
@@ -188,14 +189,14 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14.sp),
                                 ),
                                 SizedBox(height: 8.h),
-                                DropdownButtonFormField<String>(
+                                DropdownButtonFormField<TaskStatus>(
                                   initialValue: _status,
-                                  items: const [
-                                    DropdownMenuItem(value: 'todo', child: Text('Todo')),
-                                    DropdownMenuItem(value: 'in_progress', child: Text('In Progress')),
-                                    DropdownMenuItem(value: 'review', child: Text('Review')),
-                                    DropdownMenuItem(value: 'done', child: Text('Done')),
-                                  ],
+                                  items: TaskStatus.values
+                                      .map((s) => DropdownMenuItem(
+                                            value: s,
+                                            child: Text(s.label),
+                                          ))
+                                      .toList(),
                                   onChanged: (val) {
                                     if (val != null) setState(() => _status = val);
                                   },
@@ -213,14 +214,14 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14.sp),
                                 ),
                                 SizedBox(height: 8.h),
-                                DropdownButtonFormField<String>(
+                                DropdownButtonFormField<TaskPriority>(
                                   initialValue: _priority,
-                                  items: const [
-                                    DropdownMenuItem(value: 'low', child: Text('Low')),
-                                    DropdownMenuItem(value: 'medium', child: Text('Medium')),
-                                    DropdownMenuItem(value: 'high', child: Text('High')),
-                                    DropdownMenuItem(value: 'urgent', child: Text('Urgent')),
-                                  ],
+                                  items: TaskPriority.values
+                                      .map((p) => DropdownMenuItem(
+                                            value: p,
+                                            child: Text(p.label),
+                                          ))
+                                      .toList(),
                                   onChanged: (val) {
                                     if (val != null) setState(() => _priority = val);
                                   },

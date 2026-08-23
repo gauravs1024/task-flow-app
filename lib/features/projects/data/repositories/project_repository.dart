@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/data/mock_data_source.dart';
+import '../../../../core/utils/logger.dart';
 import '../models/project_model.dart';
 
 abstract class ProjectRepository {
@@ -31,6 +32,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
   @override
   Future<List<ProjectModel>> getProjects(String orgId) async {
+    AppLogger.info('ProjectRepositoryImpl.getProjects scoped to orgId: $orgId');
     try {
       // 1. Simulate network latency/errors
       await _dataSource.simulateNetwork();
@@ -64,6 +66,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
     required String description,
     required String userRole,
   }) async {
+    AppLogger.info('ProjectRepositoryImpl.createProject called for orgId: $orgId, name: $name');
     await _dataSource.simulateNetwork();
 
     // Validate role (Only admin should create projects)
@@ -97,6 +100,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
     required String description,
     required String userRole,
   }) async {
+    AppLogger.info('ProjectRepositoryImpl.editProject called for projectId: $projectId, name: $name');
     await _dataSource.simulateNetwork();
 
     // Validate role
@@ -129,6 +133,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
     required String projectId,
     required String userRole,
   }) async {
+    AppLogger.warning('ProjectRepositoryImpl.deleteProject called for projectId: $projectId');
     await _dataSource.simulateNetwork();
 
     // Enforce role-based block inside data/repo layer

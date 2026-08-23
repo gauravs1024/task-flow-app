@@ -1,12 +1,13 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/enums/app_enums.dart';
 
 class TaskModel extends Equatable {
   final String id;
   final String projectId;
   final String title;
   final String description;
-  final String status;
-  final String priority;
+  final TaskStatus status;
+  final TaskPriority priority;
   final String? assigneeId;
   final DateTime dueDate;
   final DateTime createdAt;
@@ -29,11 +30,13 @@ class TaskModel extends Equatable {
       projectId: json['project_id'] as String,
       title: json['title'] as String,
       description: json['description'] as String? ?? '',
-      status: json['status'] as String? ?? 'todo',
-      priority: json['priority'] as String? ?? 'medium',
+      status: TaskStatus.fromJson(json['status'] as String?),
+      priority: TaskPriority.fromJson(json['priority'] as String?),
       assigneeId: json['assignee_id'] as String?,
       dueDate: DateTime.parse(json['due_date'] as String),
-      createdAt: DateTime.parse(json['created_at'] as String? ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['created_at'] as String? ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 
@@ -43,10 +46,11 @@ class TaskModel extends Equatable {
       'project_id': projectId,
       'title': title,
       'description': description,
-      'status': status,
-      'priority': priority,
+      'status': status.toJson(),
+      'priority': priority.toJson(),
       if (assigneeId != null) 'assignee_id': assigneeId,
-      'due_date': '${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}',
+      'due_date':
+          '${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}',
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -56,8 +60,8 @@ class TaskModel extends Equatable {
     String? projectId,
     String? title,
     String? description,
-    String? status,
-    String? priority,
+    TaskStatus? status,
+    TaskPriority? priority,
     String? assigneeId,
     DateTime? dueDate,
     DateTime? createdAt,
@@ -69,12 +73,22 @@ class TaskModel extends Equatable {
       description: description ?? this.description,
       status: status ?? this.status,
       priority: priority ?? this.priority,
-      assigneeId: assigneeId, // Note: can pass null explicitly
+      assigneeId: assigneeId, // can be null explicitly to unassign
       dueDate: dueDate ?? this.dueDate,
       createdAt: createdAt ?? this.createdAt,
     );
   }
 
   @override
-  List<Object?> get props => [id, projectId, title, description, status, priority, assigneeId, dueDate, createdAt];
+  List<Object?> get props => [
+        id,
+        projectId,
+        title,
+        description,
+        status,
+        priority,
+        assigneeId,
+        dueDate,
+        createdAt,
+      ];
 }

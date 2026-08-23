@@ -1,7 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/enums/app_enums.dart';
+import '../../../../generated/locale_keys.g.dart';
 import '../../data/models/task_model.dart';
 import '../../data/repositories/task_repository.dart';
 import '../cubit/task_cubit.dart';
@@ -27,8 +30,8 @@ class TaskListScreen extends StatefulWidget {
 
 class _TaskListScreenState extends State<TaskListScreen> {
   // Filter states
-  String? _selectedStatus;
-  String? _selectedPriority;
+  TaskStatus? _selectedStatus;
+  TaskPriority? _selectedPriority;
   String? _selectedAssigneeId;
   DateTimeRange? _selectedDateRange;
 
@@ -113,7 +116,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tasks list'),
+        title: Text(LocaleKeys.project_tasks_list_header.tr()),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_alt_off_outlined),
@@ -170,8 +173,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     return Center(
                       child: Padding(
                         padding: EdgeInsets.all(32.r),
-                        child: const Text(
-                          'No tasks match the active filters.',
+                        child: Text(
+                          LocaleKeys.task_no_matching_filters.tr(),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -220,13 +223,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                 Container(
                                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                                   decoration: BoxDecoration(
-                                    color: _getStatusColor(task.status).withValues(alpha: 0.1),
+                                    color: task.status.color.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Text(
-                                    task.status.replaceAll('_', ' ').toUpperCase(),
+                                    task.status.label.toUpperCase(),
                                     style: TextStyle(
-                                      color: _getStatusColor(task.status),
+                                      color: task.status.color,
                                       fontSize: 10.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -234,11 +237,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  task.priority.toUpperCase(),
+                                  task.priority.label.toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 10.sp,
                                     fontWeight: FontWeight.bold,
-                                    color: _getPriorityColor(task.priority),
+                                    color: task.priority.color,
                                   ),
                                 ),
                               ],
@@ -276,15 +279,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
             children: [
               // Status Filter
               Expanded(
-                child: DropdownButtonFormField<String?>(
+                child: DropdownButtonFormField<TaskStatus?>(
                   decoration: const InputDecoration(labelText: 'Status', contentPadding: EdgeInsets.zero),
                   initialValue: _selectedStatus,
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('All')),
-                    DropdownMenuItem(value: 'todo', child: Text('Todo')),
-                    DropdownMenuItem(value: 'in_progress', child: Text('In Progress')),
-                    DropdownMenuItem(value: 'review', child: Text('Review')),
-                    DropdownMenuItem(value: 'done', child: Text('Done')),
+                  items: [
+                    const DropdownMenuItem<TaskStatus?>(value: null, child: Text('All')),
+                    ...TaskStatus.values.map((s) => DropdownMenuItem<TaskStatus?>(
+                      value: s,
+                      child: Text(s.label),
+                    )),
                   ],
                   onChanged: (val) {
                     setState(() => _selectedStatus = val);
@@ -294,15 +297,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
               SizedBox(width: 12.w),
               // Priority Filter
               Expanded(
-                child: DropdownButtonFormField<String?>(
+                child: DropdownButtonFormField<TaskPriority?>(
                   decoration: const InputDecoration(labelText: 'Priority', contentPadding: EdgeInsets.zero),
                   initialValue: _selectedPriority,
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('All')),
-                    DropdownMenuItem(value: 'low', child: Text('Low')),
-                    DropdownMenuItem(value: 'medium', child: Text('Medium')),
-                    DropdownMenuItem(value: 'high', child: Text('High')),
-                    DropdownMenuItem(value: 'urgent', child: Text('Urgent')),
+                  items: [
+                    const DropdownMenuItem<TaskPriority?>(value: null, child: Text('All')),
+                    ...TaskPriority.values.map((p) => DropdownMenuItem<TaskPriority?>(
+                      value: p,
+                      child: Text(p.label),
+                    )),
                   ],
                   onChanged: (val) {
                     setState(() => _selectedPriority = val);
@@ -361,33 +364,5 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'todo':
-        return AppColors.statusTodo;
-      case 'in_progress':
-        return AppColors.statusInProgress;
-      case 'review':
-        return AppColors.statusReview;
-      case 'done':
-        return AppColors.statusDone;
-      default:
-        return AppColors.textSecondaryLight;
-    }
-  }
-
-  Color _getPriorityColor(String priority) {
-    switch (priority) {
-      case 'urgent':
-        return AppColors.priorityUrgent;
-      case 'high':
-        return AppColors.priorityHigh;
-      case 'medium':
-        return AppColors.priorityMedium;
-      case 'low':
-        return AppColors.priorityLow;
-      default:
-        return AppColors.textSecondaryLight;
-    }
-  }
 }
+

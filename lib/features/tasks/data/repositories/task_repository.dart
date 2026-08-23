@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/data/mock_data_source.dart';
+import '../../../../core/utils/logger.dart';
 import '../models/comment_model.dart';
 import '../models/task_model.dart';
 
@@ -31,6 +32,7 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<List<TaskModel>> getTasksForProject(String projectId) async {
+    AppLogger.info('TaskRepositoryImpl.getTasksForProject called for projectId: $projectId');
     try {
       await _dataSource.simulateNetwork();
 
@@ -57,6 +59,7 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<TaskModel> createTask(TaskModel task, String userOrgId) async {
+    AppLogger.info('TaskRepositoryImpl.createTask called for projectId: ${task.projectId}, title: ${task.title}');
     await _dataSource.simulateNetwork();
 
     if (task.title.trim().isEmpty) {
@@ -94,6 +97,7 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<TaskModel> updateTask(TaskModel task, String userOrgId) async {
+    AppLogger.info('TaskRepositoryImpl.updateTask called for taskId: ${task.id}, title: ${task.title}');
     await _dataSource.simulateNetwork();
 
     if (task.title.trim().isEmpty) {
@@ -123,6 +127,7 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<void> deleteTask(String taskId) async {
+    AppLogger.warning('TaskRepositoryImpl.deleteTask called for taskId: $taskId');
     await _dataSource.simulateNetwork();
 
     final index = _dataSource.tasks.indexWhere((t) => t['id'] == taskId);
@@ -148,6 +153,7 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<List<CommentModel>> getComments(String taskId) async {
+    AppLogger.info('TaskRepositoryImpl.getComments called for taskId: $taskId');
     try {
       await _dataSource.simulateNetwork();
 
@@ -183,6 +189,7 @@ class TaskRepositoryImpl implements TaskRepository {
     required String authorId,
     required String body,
   }) async {
+    AppLogger.info('TaskRepositoryImpl.addComment called for taskId: $taskId, authorId: $authorId');
     await _dataSource.simulateNetwork();
 
     if (body.trim().isEmpty) {

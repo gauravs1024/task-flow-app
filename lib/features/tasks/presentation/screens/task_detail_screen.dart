@@ -1,4 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/enums/app_enums.dart';
+import '../../../../generated/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
@@ -73,7 +76,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         : _orgMembers.firstWhere((m) => m['id'] == _task.assigneeId);
   }
 
-  Future<void> _updateStatus(String newStatus) async {
+  Future<void> _updateStatus(TaskStatus newStatus) async {
     final updatedTask = _task.copyWith(status: newStatus);
     final success = await context.read<TaskCubit>().updateTask(
       updatedTask,
@@ -86,7 +89,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     }
   }
 
-  Future<void> _updatePriority(String newPriority) async {
+  Future<void> _updatePriority(TaskPriority newPriority) async {
     final updatedTask = _task.copyWith(priority: newPriority);
     final success = await context.read<TaskCubit>().updateTask(
       updatedTask,
@@ -128,12 +131,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Delete Task'),
-          content: Text('Are you sure you want to delete "${_task.title}"?'),
+          title: Text(LocaleKeys.task_confirm_delete_title.tr()),
+          content: Text('${LocaleKeys.task_confirm_delete_task_msg.tr()} ("${_task.title}")'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text(LocaleKeys.task_cancel_btn.tr()),
             ),
             TextButton(
               onPressed: () async {
@@ -156,9 +159,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   }
                 }
               },
-              child: const Text(
-                'Delete',
-                style: TextStyle(color: AppColors.error),
+              child: Text(
+                LocaleKeys.task_delete_btn.tr(),
+                style: const TextStyle(
+                  color: AppColors.error,
+                ),
               ),
             ),
           ],
@@ -268,7 +273,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(fontSize: 14.sp),
                                 ),
-                                DropdownButton<String>(
+                                DropdownButton<TaskStatus>(
                                   value: _task.status,
                                   underline: const SizedBox(),
                                   icon: const Icon(
@@ -278,24 +283,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   onChanged: (val) {
                                     if (val != null) _updateStatus(val);
                                   },
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'todo',
-                                      child: Text('Todo'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'in_progress',
-                                      child: Text('In Progress'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'review',
-                                      child: Text('Review'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'done',
-                                      child: Text('Done'),
-                                    ),
-                                  ],
+                                  items: TaskStatus.values
+                                      .map((s) => DropdownMenuItem(
+                                            value: s,
+                                            child: Text(s.label),
+                                          ))
+                                      .toList(),
                                 ),
                               ],
                             ),
@@ -310,7 +303,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(fontSize: 14.sp),
                                 ),
-                                DropdownButton<String>(
+                                DropdownButton<TaskPriority>(
                                   value: _task.priority,
                                   underline: const SizedBox(),
                                   icon: const Icon(
@@ -320,24 +313,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   onChanged: (val) {
                                     if (val != null) _updatePriority(val);
                                   },
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'low',
-                                      child: Text('Low'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'medium',
-                                      child: Text('Medium'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'high',
-                                      child: Text('High'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'urgent',
-                                      child: Text('Urgent'),
-                                    ),
-                                  ],
+                                  items: TaskPriority.values
+                                      .map((p) => DropdownMenuItem(
+                                            value: p,
+                                            child: Text(p.label),
+                                          ))
+                                      .toList(),
                                 ),
                               ],
                             ),
@@ -425,7 +406,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
                             // Comments Section
                             Text(
-                              'Comments',
+                              LocaleKeys.task_comments_header.tr(),
                               style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
                                     fontSize: 18.sp,
@@ -569,8 +550,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             child: TextFormField(
                               controller: _commentController,
                               maxLines: null,
-                              decoration: const InputDecoration(
-                                hintText: 'Add a comment...',
+                              decoration: InputDecoration(
+                                hintText: LocaleKeys.task_add_comment_hint.tr(),
                                 border: InputBorder.none,
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,

@@ -1,7 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/enums/app_enums.dart';
+import '../../../../generated/locale_keys.g.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../../tasks/data/repositories/task_repository.dart';
@@ -72,7 +75,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                               Text(
                                 widget.project.description.isNotEmpty
                                     ? widget.project.description
-                                    : 'No description provided.',
+                                    : LocaleKeys.project_no_description.tr(),
                                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       color: AppColors.textSecondaryLight,
                                     ),
@@ -81,7 +84,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
 
                               // Task counts header
                               Text(
-                                'Task Summary',
+                                LocaleKeys.project_task_summary.tr(),
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       fontSize: 18.sp,
                                       fontWeight: FontWeight.bold,
@@ -92,13 +95,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                               // Task counts cards
                               Row(
                                 children: [
-                                  Expanded(child: _buildCountCard('Todo', _countStatus(state, 'todo'), AppColors.statusTodo)),
+                                  Expanded(child: _buildCountCard('Todo', _countStatus(state, TaskStatus.todo), AppColors.statusTodo)),
                                   SizedBox(width: 8.w),
-                                  Expanded(child: _buildCountCard('Active', _countStatus(state, 'in_progress'), AppColors.statusInProgress)),
+                                  Expanded(child: _buildCountCard('Active', _countStatus(state, TaskStatus.inProgress), AppColors.statusInProgress)),
                                   SizedBox(width: 8.w),
-                                  Expanded(child: _buildCountCard('Review', _countStatus(state, 'review'), AppColors.statusReview)),
+                                  Expanded(child: _buildCountCard('Review', _countStatus(state, TaskStatus.review), AppColors.statusReview)),
                                   SizedBox(width: 8.w),
-                                  Expanded(child: _buildCountCard('Done', _countStatus(state, 'done'), AppColors.statusDone)),
+                                  Expanded(child: _buildCountCard('Done', _countStatus(state, TaskStatus.done), AppColors.statusDone)),
                                 ],
                               ),
                               SizedBox(height: 28.h),
@@ -108,7 +111,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Tasks List',
+                                    LocaleKeys.project_tasks_list_header.tr(),
                                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                           fontSize: 18.sp,
                                           fontWeight: FontWeight.bold,
@@ -175,7 +178,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     );
   }
 
-  int _countStatus(TaskState state, String status) {
+  int _countStatus(TaskState state, TaskStatus status) {
     if (state is TaskSuccess) {
       return state.tasks.where((t) => t.status == status).length;
     }
@@ -195,7 +198,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
       return Container(
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(vertical: 40.h),
-        child: const Text('No tasks found for this project.'),
+        child: Text(LocaleKeys.empty_tasks.tr()),
       );
     }
     if (state is TaskError) {
@@ -245,13 +248,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
               trailing: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(task.status).withValues(alpha: 0.1),
+                  color: task.status.color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
-                  task.status.replaceAll('_', ' ').toUpperCase(),
+                  task.status.label.toUpperCase(),
                   style: TextStyle(
-                    color: _getStatusColor(task.status),
+                    color: task.status.color,
                     fontSize: 10.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -301,18 +304,5 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'todo':
-        return AppColors.statusTodo;
-      case 'in_progress':
-        return AppColors.statusInProgress;
-      case 'review':
-        return AppColors.statusReview;
-      case 'done':
-        return AppColors.statusDone;
-      default:
-        return AppColors.textSecondaryLight;
-    }
-  }
 }
+

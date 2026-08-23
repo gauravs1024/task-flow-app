@@ -19,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _didTriggerRegister = false;
 
   @override
@@ -26,6 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -170,6 +172,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         if (value.length < 6) {
                           return 'Password must be at least 6 characters long';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20.h),
+
+                    // Confirm Password Field
+                    Text(
+                      'Confirm Password',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontSize: 14.sp,
+                          ),
+                    ),
+                    SizedBox(height: 8.h),
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      obscureText: true,
+                      enabled: !isLoading,
+                      decoration: const InputDecoration(
+                        hintText: 'Re-enter your password',
+                        prefixIcon: Icon(Icons.lock_outlined),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
                         }
                         return null;
                       },

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../../core/data/mock_data_source.dart';
+import '../../../../core/utils/logger.dart';
 import '../models/auth_token_model.dart';
 import '../models/user_model.dart';
 
@@ -25,6 +26,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserModel> login(String email, String password) async {
+    AppLogger.info('AuthRepositoryImpl.login called for email: $email');
     // 1. Simulate network delay/error
     await _dataSource.simulateNetwork();
 
@@ -73,12 +75,14 @@ class AuthRepositoryImpl implements AuthRepository {
     final tokens = AuthTokenModel.fromJson(tokenJson);
 
     await _saveSession(tokens, user);
+    AppLogger.info('AuthRepositoryImpl.login success: userId = ${user.id}');
 
     return user;
   }
 
   @override
   Future<void> register(String name, String email, String password) async {
+    AppLogger.info('AuthRepositoryImpl.register called for name: $name, email: $email');
     await _dataSource.simulateNetwork();
 
     if (name.trim().isEmpty) {
@@ -156,6 +160,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthTokenModel> refreshToken(String refreshToken) async {
+    AppLogger.info('AuthRepositoryImpl.refreshToken called');
     // 1. Simulate network
     await _dataSource.simulateNetwork();
 
@@ -177,18 +182,21 @@ class AuthRepositoryImpl implements AuthRepository {
     if (user != null) {
       await _saveSession(newTokens, user);
     }
+    AppLogger.info('AuthRepositoryImpl.refreshToken success: new access token issued');
 
     return newTokens;
   }
 
   @override
   Future<void> logout() async {
+    AppLogger.info('AuthRepositoryImpl.logout called');
     await _secureStorage.delete(key: _keyTokens);
     await _secureStorage.delete(key: _keyUser);
   }
 
   @override
   Future<UserModel?> checkSession() async {
+    AppLogger.info('AuthRepositoryImpl.checkSession checking active session status');
     final tokens = await getStoredTokens();
     final user = await getStoredUser();
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/enums/app_enums.dart';
+import '../../core/utils/logger.dart';
 
 class ThemeCubit extends Cubit<ThemeMode> {
   static const String _themeKey = 'app_theme_mode';
@@ -11,31 +13,26 @@ class ThemeCubit extends Cubit<ThemeMode> {
   }
 
   void _loadTheme() {
-    final modeString = _prefs.getString(_themeKey);
-    if (modeString == 'light') {
-      emit(ThemeMode.light);
-    } else if (modeString == 'dark') {
-      emit(ThemeMode.dark);
-    } else {
-      emit(ThemeMode.system);
-    }
+    final stored = _prefs.getString(_themeKey);
+    final mode = AppThemeMode.fromString(stored);
+    AppLogger.info('ThemeCubit: loaded theme = ${mode.name}');
+    emit(mode.toFlutterThemeMode());
   }
 
   void toggleTheme() {
     if (state == ThemeMode.dark) {
-      setLightMode();
+      setTheme(AppThemeMode.light);
     } else {
-      setDarkMode();
+      setTheme(AppThemeMode.dark);
     }
   }
 
-  void setLightMode() {
-    _prefs.setString(_themeKey, 'light');
-    emit(ThemeMode.light);
+  void setTheme(AppThemeMode mode) {
+    AppLogger.info('ThemeCubit: setting theme = ${mode.name}');
+    _prefs.setString(_themeKey, mode.toStorageString());
+    emit(mode.toFlutterThemeMode());
   }
 
-  void setDarkMode() {
-    _prefs.setString(_themeKey, 'dark');
-    emit(ThemeMode.dark);
-  }
+  void setLightMode() => setTheme(AppThemeMode.light);
+  void setDarkMode()  => setTheme(AppThemeMode.dark);
 }
