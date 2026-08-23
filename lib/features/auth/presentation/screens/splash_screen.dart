@@ -25,17 +25,26 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Premium Logo Icon
+            // Premium Logo App Icon
             Container(
-              padding: EdgeInsets.all(20.r),
+              width: 100.r,
+              height: 100.r,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(22.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
-              child: Icon(
-                Icons.task_alt,
-                size: 80.r,
-                color: AppColors.primary,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22.r),
+                child: Image.asset(
+                  'assets/icons/app_icon.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             SizedBox(height: 24.h),
