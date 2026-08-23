@@ -277,13 +277,21 @@
   "reports/20260823/20260823_100454_task_flow_app.log": {
     "groupId": "aa36e2ca-3281-4ec7-89f1-e808a8ce94c1",
     "parsedHeader": {
-      "mtime": 1787459696533,
-      "size": 129939,
+      "mtime": 1787462431841,
+      "size": 324854,
       "date": "2026-08-23T04:34:54.469Z",
       "project": "task_flow_app",
       "adapter": "dart",
-      "lineCount": 778,
+      "lineCount": 1910,
       "hasTimestamps": true
+    }
+  },
+  "reports/20260823/20260823_100454_task_flow_app.screenshots.json": {
+    "parsedHeader": {
+      "mtime": 1787462415420,
+      "size": 385,
+      "lineCount": 13,
+      "hasTimestamps": false
     }
   }
 }

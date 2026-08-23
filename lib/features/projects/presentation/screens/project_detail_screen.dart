@@ -9,6 +9,7 @@ import '../../../tasks/presentation/cubit/task_cubit.dart';
 import '../../../tasks/presentation/cubit/task_state.dart';
 import '../../../tasks/presentation/screens/task_detail_screen.dart';
 import '../../../tasks/presentation/screens/task_form_screen.dart';
+import '../../../tasks/presentation/screens/task_list_screen.dart';
 import '../../data/models/project_model.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
@@ -113,19 +114,45 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (innerContext) => BlocProvider.value(
-                                            value: context.read<TaskCubit>(),
-                                            child: TaskFormScreen(projectId: widget.project.id),
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.filter_list, color: AppColors.primary),
+                                        onPressed: () {
+                                          final authState = context.read<AuthCubit>().state as AuthAuthenticated;
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (innerContext) => MultiBlocProvider(
+                                                providers: [
+                                                  BlocProvider.value(value: context.read<TaskCubit>()),
+                                                  RepositoryProvider.value(value: context.read<TaskRepository>()),
+                                                ],
+                                                child: TaskListScreen(
+                                                  projectId: widget.project.id,
+                                                  userRole: authState.user.role ?? '',
+                                                  orgId: authState.user.orgId ?? '',
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (innerContext) => BlocProvider.value(
+                                                value: context.read<TaskCubit>(),
+                                                child: TaskFormScreen(projectId: widget.project.id),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

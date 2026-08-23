@@ -24,11 +24,11 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
   Widget build(BuildContext context) {
     final authState = context.watch<AuthCubit>().state;
     final themeMode = context.watch<ThemeCubit>().state;
-    
+
     if (authState is! AuthAuthenticated) {
       return const SizedBox();
     }
-    
+
     final user = authState.user;
 
     return Drawer(
@@ -37,9 +37,7 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
         children: [
           // Drawer Header
           UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-            ),
+            decoration: const BoxDecoration(color: AppColors.primary),
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage(user.avatarUrl),
             ),
@@ -60,7 +58,11 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
                   ),
                   child: Text(
                     'ROLE: ${user.role?.toUpperCase()}',
-                    style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -84,10 +86,13 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
                   ),
                 ),
                 const Divider(),
-                
+
                 // Simulation Category
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
                   child: Text(
                     'DEVELOPER TESTING PANEL',
                     style: TextStyle(
@@ -103,7 +108,9 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
                 ListTile(
                   leading: Icon(
                     _dataSource.isOffline ? Icons.cloud_off : Icons.cloud_queue,
-                    color: _dataSource.isOffline ? AppColors.warning : AppColors.success,
+                    color: _dataSource.isOffline
+                        ? AppColors.warning
+                        : AppColors.success,
                   ),
                   title: const Text('Simulate Offline Mode'),
                   subtitle: const Text('Serve cached local data fallback'),
@@ -170,12 +177,15 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
                     },
                   ),
                 ),
-                
+
                 const Divider(),
-                
+
                 // Expiry simulation triggers
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.accent.withValues(alpha: 0.1),
@@ -189,7 +199,9 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
                       Navigator.pop(context); // Close drawer
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Access Token Expired! Triggering silent refresh...'),
+                          content: Text(
+                            'Access Token Expired! Triggering silent refresh...',
+                          ),
                           backgroundColor: AppColors.info,
                         ),
                       );
@@ -198,7 +210,10 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
                 ),
 
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -211,7 +226,9 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
                       Navigator.pop(context); // Close drawer
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('In-memory mock data reset to initial values'),
+                          content: Text(
+                            'In-memory mock data reset to initial values',
+                          ),
                           backgroundColor: AppColors.success,
                         ),
                       );
@@ -221,11 +238,17 @@ class _SettingsDebugDrawerState extends State<SettingsDebugDrawer> {
               ],
             ),
           ),
-          
+
           // Drawer Footer Logout
           ListTile(
             leading: const Icon(Icons.exit_to_app, color: AppColors.error),
-            title: const Text('Sign Out', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
+            title: const Text(
+              'Sign Out',
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             onTap: () {
               Navigator.pop(context);
               context.read<AuthCubit>().logout();

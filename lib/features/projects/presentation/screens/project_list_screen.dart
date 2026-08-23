@@ -241,6 +241,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
             final projects = state.projects;
 
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (state.isStale)
                   Container(
@@ -263,6 +264,16 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                       ],
                     ),
                   ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+                  child: Text(
+                    'Projects',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: () => context.read<ProjectCubit>().loadProjects(_orgId),

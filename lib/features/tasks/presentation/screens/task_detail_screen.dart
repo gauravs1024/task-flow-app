@@ -15,7 +15,11 @@ class TaskDetailScreen extends StatefulWidget {
   final TaskModel task;
   final String userRole; // From parent
 
-  const TaskDetailScreen({super.key, required this.task, required this.userRole});
+  const TaskDetailScreen({
+    super.key,
+    required this.task,
+    required this.userRole,
+  });
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -62,15 +66,19 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Map<String, dynamic>? _getAssigneeDetails() {
     if (_task.assigneeId == null) return null;
-    return _orgMembers.firstWhere(
-      (m) => m['id'] == _task.assigneeId,
-      orElse: () => {},
-    ).isEmpty ? null : _orgMembers.firstWhere((m) => m['id'] == _task.assigneeId);
+    return _orgMembers
+            .firstWhere((m) => m['id'] == _task.assigneeId, orElse: () => {})
+            .isEmpty
+        ? null
+        : _orgMembers.firstWhere((m) => m['id'] == _task.assigneeId);
   }
 
   Future<void> _updateStatus(String newStatus) async {
     final updatedTask = _task.copyWith(status: newStatus);
-    final success = await context.read<TaskCubit>().updateTask(updatedTask, _userOrgId);
+    final success = await context.read<TaskCubit>().updateTask(
+      updatedTask,
+      _userOrgId,
+    );
     if (success) {
       setState(() {
         _task = updatedTask;
@@ -80,7 +88,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Future<void> _updatePriority(String newPriority) async {
     final updatedTask = _task.copyWith(priority: newPriority);
-    final success = await context.read<TaskCubit>().updateTask(updatedTask, _userOrgId);
+    final success = await context.read<TaskCubit>().updateTask(
+      updatedTask,
+      _userOrgId,
+    );
     if (success) {
       setState(() {
         _task = updatedTask;
@@ -101,7 +112,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       dueDate: _task.dueDate,
       createdAt: _task.createdAt,
     );
-    final success = await context.read<TaskCubit>().updateTask(updatedTask, _userOrgId);
+    final success = await context.read<TaskCubit>().updateTask(
+      updatedTask,
+      _userOrgId,
+    );
     if (success) {
       setState(() {
         _task = updatedTask;
@@ -126,7 +140,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 Navigator.pop(dialogContext);
                 final taskCubit = context.read<TaskCubit>();
                 final scaffoldMessenger = ScaffoldMessenger.of(context);
-                final success = await taskCubit.deleteTask(_task.id, _task.projectId);
+                final success = await taskCubit.deleteTask(
+                  _task.id,
+                  _task.projectId,
+                );
                 if (success) {
                   scaffoldMessenger.showSnackBar(
                     const SnackBar(
@@ -139,7 +156,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   }
                 }
               },
-              child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: AppColors.error),
+              ),
             ),
           ],
         );
@@ -152,7 +172,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final assignee = _getAssigneeDetails();
 
     return BlocProvider<CommentCubit>(
-      create: (context) => CommentCubit(context.read<TaskRepository>())..loadComments(_task.id),
+      create: (context) =>
+          CommentCubit(context.read<TaskRepository>())..loadComments(_task.id),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -168,14 +189,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       MaterialPageRoute(
                         builder: (itemContext) => BlocProvider.value(
                           value: taskCubit,
-                          child: TaskFormScreen(projectId: _task.projectId, task: _task),
+                          child: TaskFormScreen(
+                            projectId: _task.projectId,
+                            task: _task,
+                          ),
                         ),
                       ),
                     );
                     // Refresh screen state locally by checking current state
                     if (taskCubit.state is TaskSuccess) {
                       final tasks = (taskCubit.state as TaskSuccess).tasks;
-                      final refreshedTask = tasks.firstWhere((t) => t.id == _task.id, orElse: () => _task);
+                      final refreshedTask = tasks.firstWhere(
+                        (t) => t.id == _task.id,
+                        orElse: () => _task,
+                      );
                       setState(() {
                         _task = refreshedTask;
                       });
@@ -183,7 +210,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: AppColors.error,
+                  ),
                   onPressed: _confirmDelete,
                 ),
               ],
@@ -205,39 +235,66 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             // Title & Description
                             Text(
                               _task.title,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
                                     fontSize: 22.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
                             SizedBox(height: 12.h),
                             Text(
-                              _task.description.isNotEmpty ? _task.description : 'No description provided.',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 15.sp),
+                              _task.description.isNotEmpty
+                                  ? _task.description
+                                  : 'No description provided.',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(fontSize: 15.sp),
                             ),
                             const Divider(height: 32),
 
                             // Details Panel
-                            _buildInfoRow('Due Date', '${_task.dueDate.year}-${_task.dueDate.month.toString().padLeft(2, '0')}-${_task.dueDate.day.toString().padLeft(2, '0')}'),
+                            _buildInfoRow(
+                              'Due Date',
+                              '${_task.dueDate.year}-${_task.dueDate.month.toString().padLeft(2, '0')}-${_task.dueDate.day.toString().padLeft(2, '0')}',
+                            ),
                             SizedBox(height: 16.h),
 
                             // Status Dropdown
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Status', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14.sp)),
+                                Text(
+                                  'Status',
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontSize: 14.sp),
+                                ),
                                 DropdownButton<String>(
                                   value: _task.status,
                                   underline: const SizedBox(),
-                                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.primary),
+                                  icon: const Icon(
+                                    Icons.arrow_drop_down,
+                                    color: AppColors.primary,
+                                  ),
                                   onChanged: (val) {
                                     if (val != null) _updateStatus(val);
                                   },
                                   items: const [
-                                    DropdownMenuItem(value: 'todo', child: Text('Todo')),
-                                    DropdownMenuItem(value: 'in_progress', child: Text('In Progress')),
-                                    DropdownMenuItem(value: 'review', child: Text('Review')),
-                                    DropdownMenuItem(value: 'done', child: Text('Done')),
+                                    DropdownMenuItem(
+                                      value: 'todo',
+                                      child: Text('Todo'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'in_progress',
+                                      child: Text('In Progress'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'review',
+                                      child: Text('Review'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'done',
+                                      child: Text('Done'),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -248,19 +305,38 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Priority', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14.sp)),
+                                Text(
+                                  'Priority',
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontSize: 14.sp),
+                                ),
                                 DropdownButton<String>(
                                   value: _task.priority,
                                   underline: const SizedBox(),
-                                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.primary),
+                                  icon: const Icon(
+                                    Icons.arrow_drop_down,
+                                    color: AppColors.primary,
+                                  ),
                                   onChanged: (val) {
                                     if (val != null) _updatePriority(val);
                                   },
                                   items: const [
-                                    DropdownMenuItem(value: 'low', child: Text('Low')),
-                                    DropdownMenuItem(value: 'medium', child: Text('Medium')),
-                                    DropdownMenuItem(value: 'high', child: Text('High')),
-                                    DropdownMenuItem(value: 'urgent', child: Text('Urgent')),
+                                    DropdownMenuItem(
+                                      value: 'low',
+                                      child: Text('Low'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'medium',
+                                      child: Text('Medium'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'high',
+                                      child: Text('High'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'urgent',
+                                      child: Text('Urgent'),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -271,13 +347,26 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Assignee', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14.sp)),
+                                Text(
+                                  'Assignee',
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontSize: 14.sp),
+                                ),
                                 _isLoadingMembers
-                                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
                                     : DropdownButton<String?>(
                                         value: _task.assigneeId,
                                         underline: const SizedBox(),
-                                        icon: const Icon(Icons.arrow_drop_down, color: AppColors.primary),
+                                        icon: const Icon(
+                                          Icons.arrow_drop_down,
+                                          color: AppColors.primary,
+                                        ),
                                         onChanged: (val) {
                                           _updateAssignee(val);
                                         },
@@ -302,17 +391,32 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                               SizedBox(height: 12.h),
                               Card(
                                 elevation: 0,
-                                color: AppColors.primary.withValues(alpha: 0.05),
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.05,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.r),
-                                  side: BorderSide(color: AppColors.primary.withValues(alpha: 0.1)),
+                                  side: BorderSide(
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
+                                  ),
                                 ),
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    backgroundImage: NetworkImage(assignee['avatar_url'] as String? ?? ''),
+                                    backgroundImage: NetworkImage(
+                                      assignee['avatar_url'] as String? ?? '',
+                                    ),
                                   ),
-                                  title: Text(assignee['name'] as String? ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                  subtitle: Text(assignee['email'] as String? ?? ''),
+                                  title: Text(
+                                    assignee['name'] as String? ?? '',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    assignee['email'] as String? ?? '',
+                                  ),
                                 ),
                               ),
                             ],
@@ -322,7 +426,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             // Comments Section
                             Text(
                               'Comments',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
                                     fontSize: 18.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -332,25 +437,38 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             BlocBuilder<CommentCubit, CommentState>(
                               builder: (context, state) {
                                 if (state is CommentLoading) {
-                                  return const Center(child: CircularProgressIndicator());
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
                                 }
                                 if (state is CommentError) {
-                                  return Text(state.message, style: const TextStyle(color: AppColors.error));
+                                  return Text(
+                                    state.message,
+                                    style: const TextStyle(
+                                      color: AppColors.error,
+                                    ),
+                                  );
                                 }
                                 if (state is CommentSuccess) {
                                   final comments = state.comments;
                                   if (comments.isEmpty) {
                                     return Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                                      child: const Text('No comments yet. Start the conversation!'),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 16.h,
+                                      ),
+                                      child: const Text(
+                                        'No comments yet. Start the conversation!',
+                                      ),
                                     );
                                   }
 
                                   return ListView.separated(
                                     shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemCount: comments.length,
-                                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                                    separatorBuilder: (_, __) =>
+                                        SizedBox(height: 12.h),
                                     itemBuilder: (context, index) {
                                       final comment = comments[index];
                                       // Resolve author details
@@ -358,41 +476,59 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                         (m) => m['id'] == comment.authorId,
                                         orElse: () => {},
                                       );
-                                      final authorName = author['name'] as String? ?? 'Anonymous';
-                                      final authorAvatar = author['avatar_url'] as String? ?? '';
+                                      final authorName =
+                                          author['name'] as String? ??
+                                          'Anonymous';
+                                      final authorAvatar =
+                                          author['avatar_url'] as String? ?? '';
 
                                       return Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           CircleAvatar(
                                             radius: 18.r,
-                                            backgroundImage: authorAvatar.isNotEmpty ? NetworkImage(authorAvatar) : null,
-                                            child: authorAvatar.isEmpty ? const Icon(Icons.person) : null,
+                                            backgroundImage:
+                                                authorAvatar.isNotEmpty
+                                                ? NetworkImage(authorAvatar)
+                                                : null,
+                                            child: authorAvatar.isEmpty
+                                                ? const Icon(Icons.person)
+                                                : null,
                                           ),
                                           SizedBox(width: 12.w),
                                           Expanded(
                                             child: Container(
                                               padding: EdgeInsets.all(12.r),
                                               decoration: BoxDecoration(
-                                                color: Theme.of(context).brightness == Brightness.dark
+                                                color:
+                                                    Theme.of(
+                                                          context,
+                                                        ).brightness ==
+                                                        Brightness.dark
                                                     ? AppColors.cardBgDark
                                                     : Colors.grey.shade100,
-                                                borderRadius: BorderRadius.circular(12.r),
+                                                borderRadius:
+                                                    BorderRadius.circular(12.r),
                                               ),
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     authorName,
                                                     style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontSize: 13.sp,
                                                     ),
                                                   ),
                                                   SizedBox(height: 4.h),
                                                   Text(
                                                     comment.body,
-                                                    style: TextStyle(fontSize: 14.sp),
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -413,11 +549,15 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
                     // Add comment input box
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 12.h,
+                      ),
                       decoration: BoxDecoration(
                         border: Border(
                           top: BorderSide(
-                            color: Theme.of(context).brightness == Brightness.dark
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                 ? AppColors.borderDark
                                 : AppColors.borderLight,
                           ),
@@ -439,13 +579,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.send, color: AppColors.primary),
+                            icon: const Icon(
+                              Icons.send,
+                              color: AppColors.primary,
+                            ),
                             onPressed: () async {
                               if (_commentController.text.trim().isNotEmpty) {
                                 final text = _commentController.text;
                                 _commentController.clear();
                                 FocusScope.of(context).unfocus();
-                                await context.read<CommentCubit>().addComment(_task.id, _currentUserId, text);
+                                await context.read<CommentCubit>().addComment(
+                                  _task.id,
+                                  _currentUserId,
+                                  text,
+                                );
                               }
                             },
                           ),
@@ -469,15 +616,15 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         Text(
           label,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontSize: 14.sp,
-                color: AppColors.textSecondaryLight,
-              ),
+            fontSize: 14.sp,
+            color: AppColors.textSecondaryLight,
+          ),
         ),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
       ],
     );
