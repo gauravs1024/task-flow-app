@@ -62,7 +62,7 @@ class MockDataSource {
   Future<void> initialize() async {
     if (_rawData != null) return;
     try {
-      final jsonString = await rootBundle.loadString('mock-data.json');
+      final jsonString = await rootBundle.loadString('assets/mock-data.json');
       _rawData = json.decode(jsonString) as Map<String, dynamic>;
 
       // Load collections

@@ -25,5 +25,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - mock-data.json
+    - assets/mock-data.json
     - assets/translations/
